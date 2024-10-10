@@ -274,11 +274,13 @@ class Server_Manager_Virtualmin extends Server_Manager
             throw new Server_Exception('Create reseller command is only available in Virtualmin PRO version');
         }
 
+        $pass = str_replace('&', '$', $a->getPassword());
+
         $p = $a->getPackage();
         $client = $a->getClient();
         $params = array(
             'name'			=>	$a->getUsername(),
-            'pass'			=>	$a->getPassword(),
+            'pass'			=>	$pass,
             'email'			=>	$client->getEmail(),
             'max-doms'		=>	($p->getMaxDomains() == 'unlimited') ? 'UNLIMITED' : (int)$p->getMaxDomains(),
             'max-aliasdoms'	=>	($p->getMaxDomains() == 'unlimited') ? 'UNLIMITED' : (int)$p->getMaxDomains(),
@@ -356,9 +358,10 @@ class Server_Manager_Virtualmin extends Server_Manager
     {
         $p = $a->getPackage();
         $client = $a->getClient();
+        $pass = str_replace('&', '$', $a->getPassword());
         $params = array(
             'domain'			=>	$a->getDomain(),
-            'pass'				=>	$a->getPassword(),
+            'pass'				=>	$pass,
             'email'				=>	$client->getEmail(),
             'user'				=>	$a->getUsername(),
             'dns'				=>	'',
@@ -373,7 +376,7 @@ class Server_Manager_Virtualmin extends Server_Manager
             'quota'				=>	($p->getQuota() == 'unlimited') ? 'UNLIMITED' : (int)$p->getMaxQuota(),
             'uquota'			=>	($p->getQuota() == 'unlimited') ? 'UNLIMITED' : (int)$p->getMaxQuota(),
             'bandwidth'			=>	($p->getBandwidth() == 'unlimited') ? 'UNLIMITED' : (int)$p->getBandwidth() * 1024 * 1024,
-            'mysql-pass'		=>	$a->getPassword(),
+            'mysql-pass'		=>	$pass,
         );
         if ($p->getMaxPop()) {
             $params['mail'] = '';
@@ -453,9 +456,10 @@ class Server_Manager_Virtualmin extends Server_Manager
      */
     private function _changeUserPassword(Server_Account $a)
     {
+        $pass = str_replace('&', '$', $a->getPassword());
         $params = array(
             'domain'	=>	$a->getDomain(),
-            'pass'		=>	$a->getPassword(),
+            'pass'		=>	$pass,
         );
 
         $response = $this->_makeRequest('modify-domain', $params);
@@ -500,9 +504,10 @@ class Server_Manager_Virtualmin extends Server_Manager
     {
         $p = $a->getPackage();
         $client = $a->getClient();
+        $pass = str_replace('&', '$', $a->getPassword());
         $params = array(
             'domain'	=>	$a->getDomain(),
-            'pass'		=>	$a->getPassword(),
+            'pass'		=>	$pass,
             'email'		=>	$client->getEmail(),
             'quota'		=>	($p->getQuota() == 'unlimited') ? 'UNLIMITED' : (int)$p->getMaxQuota(),
             'uquota'	=>	($p->getQuota() == 'unlimited') ? 'UNLIMITED' : (int)$p->getMaxQuota(),
@@ -609,9 +614,11 @@ class Server_Manager_Virtualmin extends Server_Manager
             throw new Server_Exception('Modify reseller comand is only available in Virtualmin PRO version');
         }
 
+        $pass = str_replace('&', '$', $a->getPassword());
+
         $params = array(
             'name'	=>	$a->getUsername(),
-            'pass'	=>	$a->getPassword(),
+            'pass'	=>	$pass,
         );
 
         $response = $this->_makeRequest('modify-reseller', $params);
@@ -629,11 +636,13 @@ class Server_Manager_Virtualmin extends Server_Manager
             throw new Server_Exception('Modify reseller command is only available in Virtualmin PRO version');
         }
 
+        $pass = str_replace('&', '$', $a->getPassword());
+
         $p = $a->getPackage();
         $client = $a->getClient();
         $params = array(
             'name'			=>	$a->getUsername(),
-            'pass'			=>	$a->getPassword(),
+            'pass'			=>	$pass,
             'email'			=>	$client->getEmail(),
             'max-doms'		=>	($p->getMaxDomains() == 'unlimited') ? 'UNLIMITED' : $p->getMaxDomains(),
             'max-aliasdoms'	=>	($p->getMaxDomains() == 'unlimited') ? 'UNLIMITED' : $p->getMaxDomains(),
