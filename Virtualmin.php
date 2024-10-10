@@ -387,7 +387,7 @@ class Server_Manager_Virtualmin extends Server_Manager
         if (!$a->getIp()) {
             $params['allocate-ip'] = '';
         } else {
-            $params['ip'] = $a->getIp();
+            $params['shared-ip'] = $a->getIp();
             $params['ip-already'] = '';
         }
 
