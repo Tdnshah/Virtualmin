@@ -143,14 +143,14 @@ class Server_Manager_Virtualmin extends Server_Manager
         return true;
     }
 
-    public function changeAccountPassword(Server_Account $a, $new)
+    public function changeAccountPassword(Server_Account $a, $newPassword)
     {
         if ($a->getReseller()) {
-            if (!$this->_changeResellerPassword($a)) {
+            if (!$this->_changeResellerPassword($a, $newPassword)) {
                 return false;
             }
         } else {
-            if (!$this->_changeUserPassword($a)) {
+            if (!$this->_changeUserPassword($a, $newPassword)) {
                 return false;
             }
         }
@@ -454,12 +454,11 @@ class Server_Manager_Virtualmin extends Server_Manager
      * @throws Server_Exception
      * @return boolean
      */
-    private function _changeUserPassword(Server_Account $a)
+    private function _changeUserPassword(Server_Account $a, $newPassword)
     {
-        $pass = str_replace('&', '$', $a->getPassword());
         $params = array(
             'domain'	=>	$a->getDomain(),
-            'pass'		=>	$pass,
+            'pass'		=>	$newPassword,
         );
 
         $response = $this->_makeRequest('modify-domain', $params);
@@ -608,17 +607,14 @@ class Server_Manager_Virtualmin extends Server_Manager
         }
     }
 
-    private function _changeResellerPassword(Server_Account $a)
+    private function _changeResellerPassword(Server_Account $a, $newPassword)
     {
         if (!$this->_checkCommand('modify-reseller')) {
             throw new Server_Exception('Modify reseller comand is only available in Virtualmin PRO version');
         }
-
-        $pass = str_replace('&', '$', $a->getPassword());
-
         $params = array(
             'name'	=>	$a->getUsername(),
-            'pass'	=>	$pass,
+            'pass'	=>	$newPassword,
         );
 
         $response = $this->_makeRequest('modify-reseller', $params);
