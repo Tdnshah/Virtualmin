@@ -1,7 +1,13 @@
-# Virtualmin Server Manager for FOSSBilling
+# FOSSBilling-Virtualmin Server Manager
 
-This repository is for the Virtualmin server manager for FOSSBilling.
-This server manager is currently unmaintained and does not function correctly. If you use Virtualmin and are a developer, we'd appreciate it if someone could assist in getting it functional again & maintain it.
+> [!NOTE]
+> Tested with [FOSSBilling](https://github.com/FOSSBilling/FOSSBilling) v0.6.22
+>
+
+## This Module Is In Testing Phase!
+Please do not download and use this module if you are trying to use it in a production enviroment.  We need to find testers that know Virtualmin, and can test to ensure that all functions are working as intended.  If they aren't please open an issue here, and I'll work on getting it fixed.
+
+Once we have confirmed no issues, I'll make a pull request to the offical fossbilling repo.
 
 ## Installation
 1. Download the `Virtualmin.php` file from the source code
