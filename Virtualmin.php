@@ -7,7 +7,6 @@
  * @copyright FOSSBilling (https://www.fossbilling.org)
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  */
-
 /**
  * @see http://doxfer.com/Webmin/TheWebminAPI
  */
@@ -146,11 +145,11 @@ class Server_Manager_Virtualmin extends Server_Manager
     public function changeAccountPassword(Server_Account $a, $newPassword)
     {
         if ($a->getReseller()) {
-            if (!$this->_changeResellerPassword($a, $newPassword)) {
+            if (!$this->_changeResellerPassword($a, $this->_removeChars($newPassword))) {
                 return false;
             }
         } else {
-            if (!$this->_changeUserPassword($a, $newPassword)) {
+            if (!$this->_changeUserPassword($a, $this->_removeChars($newPassword))) {
                 return false;
             }
         }
@@ -202,8 +201,6 @@ class Server_Manager_Virtualmin extends Server_Manager
         curl_setopt($ch, CURLOPT_USERPWD, "$username:$password");
         $result = curl_exec($ch);
         curl_close($ch);
-
-        file_put_contents('/home/json/web/billing.nerdbyte.org/public_html/data/log/bullshit.log', $result);
 
         $json = json_decode($result, true);
 
@@ -274,13 +271,11 @@ class Server_Manager_Virtualmin extends Server_Manager
             throw new Server_Exception('Create reseller command is only available in Virtualmin PRO version');
         }
 
-        $pass = str_replace('&', '$', $a->getPassword());
-
         $p = $a->getPackage();
         $client = $a->getClient();
         $params = array(
             'name'			=>	$a->getUsername(),
-            'pass'			=>	$pass,
+            'pass'			=>	$a->getPassword,
             'email'			=>	$client->getEmail(),
             'max-doms'		=>	($p->getMaxDomains() == 'unlimited') ? 'UNLIMITED' : (int)$p->getMaxDomains(),
             'max-aliasdoms'	=>	($p->getMaxDomains() == 'unlimited') ? 'UNLIMITED' : (int)$p->getMaxDomains(),
@@ -358,10 +353,9 @@ class Server_Manager_Virtualmin extends Server_Manager
     {
         $p = $a->getPackage();
         $client = $a->getClient();
-        $pass = str_replace('&', '$', $a->getPassword());
         $params = array(
             'domain'			=>	$a->getDomain(),
-            'pass'				=>	$pass,
+            'pass'				=>	$a-getPassword(),
             'email'				=>	$client->getEmail(),
             'user'				=>	$a->getUsername(),
             'dns'				=>	'',
@@ -376,7 +370,7 @@ class Server_Manager_Virtualmin extends Server_Manager
             'quota'				=>	($p->getQuota() == 'unlimited') ? 'UNLIMITED' : (int)$p->getMaxQuota(),
             'uquota'			=>	($p->getQuota() == 'unlimited') ? 'UNLIMITED' : (int)$p->getMaxQuota(),
             'bandwidth'			=>	($p->getBandwidth() == 'unlimited') ? 'UNLIMITED' : (int)$p->getBandwidth() * 1024 * 1024,
-            'mysql-pass'		=>	$pass,
+            'mysql-pass'		=>	$this->_removeChars($a->getPassword()),
         );
         if ($p->getMaxPop()) {
             $params['mail'] = '';
@@ -503,10 +497,9 @@ class Server_Manager_Virtualmin extends Server_Manager
     {
         $p = $a->getPackage();
         $client = $a->getClient();
-        $pass = str_replace('&', '$', $a->getPassword());
         $params = array(
             'domain'	=>	$a->getDomain(),
-            'pass'		=>	$pass,
+            'pass'		=>	$this->_removeChars($a->getPassword()),
             'email'		=>	$client->getEmail(),
             'quota'		=>	($p->getQuota() == 'unlimited') ? 'UNLIMITED' : (int)$p->getMaxQuota(),
             'uquota'	=>	($p->getQuota() == 'unlimited') ? 'UNLIMITED' : (int)$p->getMaxQuota(),
@@ -614,7 +607,7 @@ class Server_Manager_Virtualmin extends Server_Manager
         }
         $params = array(
             'name'	=>	$a->getUsername(),
-            'pass'	=>	$newPassword,
+            'pass'	=>	$this->_removeChars($newPassword),
         );
 
         $response = $this->_makeRequest('modify-reseller', $params);
@@ -632,13 +625,11 @@ class Server_Manager_Virtualmin extends Server_Manager
             throw new Server_Exception('Modify reseller command is only available in Virtualmin PRO version');
         }
 
-        $pass = str_replace('&', '$', $a->getPassword());
-
         $p = $a->getPackage();
         $client = $a->getClient();
         $params = array(
             'name'			=>	$a->getUsername(),
-            'pass'			=>	$pass,
+            'pass'			=>	$this->_removeChars($a->getPassword()),
             'email'			=>	$client->getEmail(),
             'max-doms'		=>	($p->getMaxDomains() == 'unlimited') ? 'UNLIMITED' : $p->getMaxDomains(),
             'max-aliasdoms'	=>	($p->getMaxDomains() == 'unlimited') ? 'UNLIMITED' : $p->getMaxDomains(),
@@ -676,5 +667,17 @@ class Server_Manager_Virtualmin extends Server_Manager
             $placeholders = ['action' => __trans('create reseller account'), 'type' => 'Virtualmin'];
             throw new Server_Exception('Failed to :action: on the :type: server, check the error logs for further details', $placeholders);
         }
+    }
+
+    /**
+     * Remove all special chars, this will need to be revisted.
+     *
+     * @param mixed $password
+     *
+     * @return string
+     */
+    private function _removeChars($password): string
+    {
+        return preg_replace("/[$&+,:;=?@#|'<>.^*()%!`-]/", '', $password);
     }
 }
