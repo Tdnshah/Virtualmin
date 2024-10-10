@@ -145,11 +145,11 @@ class Server_Manager_Virtualmin extends Server_Manager
     public function changeAccountPassword(Server_Account $a, $newPassword)
     {
         if ($a->getReseller()) {
-            if (!$this->_changeResellerPassword($a, $this->_removeChars($newPassword))) {
+            if (!$this->_changeResellerPassword($a, $this->_encodePassword($newPassword))) {
                 return false;
             }
         } else {
-            if (!$this->_changeUserPassword($a, $this->_removeChars($newPassword))) {
+            if (!$this->_changeUserPassword($a, $this->_encodePassword($newPassword))) {
                 return false;
             }
         }
@@ -370,7 +370,7 @@ class Server_Manager_Virtualmin extends Server_Manager
             'quota'				=>	($p->getQuota() == 'unlimited') ? 'UNLIMITED' : (int)$p->getMaxQuota(),
             'uquota'			=>	($p->getQuota() == 'unlimited') ? 'UNLIMITED' : (int)$p->getMaxQuota(),
             'bandwidth'			=>	($p->getBandwidth() == 'unlimited') ? 'UNLIMITED' : (int)$p->getBandwidth() * 1024 * 1024,
-            'mysql-pass'		=>	$this->_removeChars($a->getPassword()),
+            'mysql-pass'		=>	$this->_encodePassword($a->getPassword()),
         );
         if ($p->getMaxPop()) {
             $params['mail'] = '';
@@ -499,7 +499,7 @@ class Server_Manager_Virtualmin extends Server_Manager
         $client = $a->getClient();
         $params = array(
             'domain'	=>	$a->getDomain(),
-            'pass'		=>	$this->_removeChars($a->getPassword()),
+            'pass'		=>	$this->_encodePassword($a->getPassword()),
             'email'		=>	$client->getEmail(),
             'quota'		=>	($p->getQuota() == 'unlimited') ? 'UNLIMITED' : (int)$p->getMaxQuota(),
             'uquota'	=>	($p->getQuota() == 'unlimited') ? 'UNLIMITED' : (int)$p->getMaxQuota(),
@@ -607,7 +607,7 @@ class Server_Manager_Virtualmin extends Server_Manager
         }
         $params = array(
             'name'	=>	$a->getUsername(),
-            'pass'	=>	$this->_removeChars($newPassword),
+            'pass'	=>	$this->_encodePassword($newPassword),
         );
 
         $response = $this->_makeRequest('modify-reseller', $params);
@@ -629,7 +629,7 @@ class Server_Manager_Virtualmin extends Server_Manager
         $client = $a->getClient();
         $params = array(
             'name'			=>	$a->getUsername(),
-            'pass'			=>	$this->_removeChars($a->getPassword()),
+            'pass'			=>	$this->_encodePassword($a->getPassword()),
             'email'			=>	$client->getEmail(),
             'max-doms'		=>	($p->getMaxDomains() == 'unlimited') ? 'UNLIMITED' : $p->getMaxDomains(),
             'max-aliasdoms'	=>	($p->getMaxDomains() == 'unlimited') ? 'UNLIMITED' : $p->getMaxDomains(),
@@ -676,8 +676,8 @@ class Server_Manager_Virtualmin extends Server_Manager
      *
      * @return string
      */
-    private function _removeChars($password): string
+    private function _encodePassword($password): string
     {
-        return preg_replace("/[$&+,:;=?@#|'<>.^*()%!`-]/", '', $password);
+        return urlencode($password);
     }
 }
