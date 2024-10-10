@@ -385,7 +385,7 @@ class Server_Manager_Virtualmin extends Server_Manager
             $params['mysql'] = '';
         }
         if (!$a->getIp()) {
-            $params['alocate-ip'] = '';
+            $params['allocate-ip'] = '';
         } else {
             $params['ip'] = $a->getIp();
             $params['ip-already'] = '';
