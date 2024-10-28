@@ -275,7 +275,7 @@ class Server_Manager_Virtualmin extends Server_Manager
         $client = $a->getClient();
         $params = array(
             'name'			=>	$a->getUsername(),
-            'pass'			=>	$a->getPassword,
+            'pass'			=>	$a->getPassword(),
             'email'			=>	$client->getEmail(),
             'max-doms'		=>	($p->getMaxDomains() == 'unlimited') ? 'UNLIMITED' : (int)$p->getMaxDomains(),
             'max-aliasdoms'	=>	($p->getMaxDomains() == 'unlimited') ? 'UNLIMITED' : (int)$p->getMaxDomains(),
@@ -355,7 +355,7 @@ class Server_Manager_Virtualmin extends Server_Manager
         $client = $a->getClient();
         $params = array(
             'domain'			=>	$a->getDomain(),
-            'pass'				=>	$a-getPassword(),
+            'pass'				=>	$a->getPassword(),
             'email'				=>	$client->getEmail(),
             'user'				=>	$a->getUsername(),
             'dns'				=>	'',
